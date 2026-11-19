@@ -11,8 +11,7 @@ ENV UV_COMPILE_BYTECODE=1 \
 RUN uv venv /opt/venv --python /usr/local/bin/python3.13
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip install --python /opt/venv/bin/python pandas requests pyyaml numpy numba tqdm
+RUN uv pip install --python /opt/venv/bin/python pandas requests pyyaml numpy numba tqdm
 
 WORKDIR /app
 
