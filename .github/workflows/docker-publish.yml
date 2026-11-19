@@ -85,3 +85,28 @@ jobs:
         - registry: registry.harmonyhpc.io
           username: ${{ vars.HARMONY_USERNAME }}
           password: ${{ secrets.HARMONY_PASSWORD }}
+
+  build-proteinfold-utils:
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      output: image
+      push: true
+      job-name-prefix: proteinfold-utils
+      context: .
+      file: utils.Dockerfile
+      platforms: linux/amd64,linux/arm64
+      cache: true
+      cache-scope: proteinfold-utils
+      meta-images: registry.harmonyhpc.io/baldikacti_umass_edu-pub/chienlab_proteinfold/utils
+      meta-tags: |
+        type=sha
+        type=raw,value=latest,enable={{is_default_branch}}
+      set-meta-labels: true
+    secrets:
+      registry-auths: |
+        - registry: registry.harmonyhpc.io
+          username: ${{ vars.HARMONY_USERNAME }}
+          password: ${{ secrets.HARMONY_PASSWORD }}
