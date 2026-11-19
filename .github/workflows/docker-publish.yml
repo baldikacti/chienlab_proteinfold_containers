@@ -1,0 +1,87 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-alphafold3:
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+    permissions:
+      contents: read # to fetch the repository content
+      id-token: write # for signing attestation(s) with GitHub OIDC Token
+    with:
+      output: image
+      push: true
+      job-name-prefix: alphafold3
+      context: alphafold3
+      file: docker/Dockerfile
+      platforms: linux/amd64,linux/arm64
+      cache: true
+      cache-scope: alphafold3
+      meta-images: registry.harmonyhpc.io/baldikacti_umass_edu-pub/chienlab_proteinfold/alphafold3
+      meta-tags: |
+        type=raw,value=3.0.5
+        type=sha
+        type=raw,value=latest,enable={{is_default_branch}}
+      set-meta-labels: true
+    secrets:
+      registry-auths: |
+        - registry: registry.harmonyhpc.io
+          username: ${{ vars.HARMONY_USERNAME }}
+          password: ${{ secrets.HARMONY_PASSWORD }}
+
+  build-boltz:
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      output: image
+      push: true
+      job-name-prefix: boltz
+      context: .
+      file: boltz.Dockerfile
+      platforms: linux/amd64,linux/arm64
+      cache: true
+      cache-scope: boltz
+      meta-images: registry.harmonyhpc.io/baldikacti_umass_edu-pub/chienlab_proteinfold/boltz
+      meta-tags: |
+        type=sha
+        type=raw,value=latest,enable={{is_default_branch}}
+      set-meta-labels: true
+    secrets:
+      registry-auths: |
+        - registry: registry.harmonyhpc.io
+          username: ${{ vars.HARMONY_USERNAME }}
+          password: ${{ secrets.HARMONY_PASSWORD }}
+
+  build-proteinfold-py:
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      output: image
+      push: true
+      job-name-prefix: proteinfold-py
+      context: .
+      file: chienlab_proteinfold_py.Dockerfile
+      platforms: linux/amd64,linux/arm64
+      cache: true
+      cache-scope: proteinfold-py
+      meta-images: registry.harmonyhpc.io/baldikacti_umass_edu-pub/chienlab_proteinfold/chienlab_proteinfold_py
+      meta-tags: |
+        type=sha
+        type=raw,value=latest,enable={{is_default_branch}}
+      set-meta-labels: true
+    secrets:
+      registry-auths: |
+        - registry: registry.harmonyhpc.io
+          username: ${{ vars.HARMONY_USERNAME }}
+          password: ${{ secrets.HARMONY_PASSWORD }}
